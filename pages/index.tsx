@@ -23,10 +23,13 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-    getAllProjects()
+      getAllProjects()
     }
   }, [router.isReady])
 
+  useEffect(() => {
+    setFilterByQuery()
+  }, [projects])
 
   const filterTags = ['过滤方式', 'chain', 'status']
 
@@ -35,9 +38,30 @@ const Home: NextPage = () => {
       params: [],
     })
     setProjects(response.data.result)
-    setFilteredProjects(response.data.result)
     getAllChains(response.data.result)
     getAlLStatus(response.data.result)
+  }
+
+  const setFilterByQuery = () => {
+    const { query } = router
+    if (query.name) {
+      setSearchName(query.name as string)
+      filterByName(query.name as string)
+    } else if (query.chain) {
+      setFilterTag('chain')
+      filterByCatg('chain', query.chain as string)
+      router.replace({
+        query: { filter_by_chain: query.chain },
+      })
+    } else if (query.status) {
+      setFilterTag('status')
+      filterByCatg('status', query.status as string)
+      router.replace({
+        query: { filter_by_status: query.chain },
+      })
+    } else {
+      setFilteredProjects(projects)
+    }
   }
 
   const getAllChains = (data: any) => {
