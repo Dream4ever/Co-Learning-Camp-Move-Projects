@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -11,6 +12,8 @@ import ClearIcon from '../icons/Clear.svg'
 import axios from 'axios'
 
 const Home: NextPage = () => {
+  const router = useRouter()
+
   const [projects, setProjects] = useState([])
   const [filteredProjects, setFilteredProjects] = useState([])
   const [searchName, setSearchName] = useState('')
@@ -19,8 +22,11 @@ const Home: NextPage = () => {
   const [filterTag, setFilterTag] = useState('')
 
   useEffect(() => {
+    if (router.isReady) {
     getAllProjects()
-  }, [])
+    }
+  }, [router.isReady])
+
 
   const filterTags = ['过滤方式', 'chain', 'status']
 
@@ -61,6 +67,9 @@ const Home: NextPage = () => {
 
   const onClickSearch = () => {
     filterByName(searchName)
+    router.replace({
+      query: { name: searchName },
+    })
   }
 
   const filterByName = (name: string) => {
@@ -72,6 +81,9 @@ const Home: NextPage = () => {
 
   const clearSearch = () => {
     setSearchName('')
+    router.replace({
+      query: {},
+    })
     setFilteredProjects(projects)
   }
 
@@ -92,17 +104,26 @@ const Home: NextPage = () => {
         return project.chains && project.chains.includes(content)
       })
       setFilteredProjects(filtered)
+      router.replace({
+        query: { chain: content },
+      })
     } else if (catg === 'status') {
       const filtered = projects.filter((project: any) => {
         return project.status === content
       })
       setFilteredProjects(filtered)
+      router.replace({
+        query: { status: content },
+      })
     }
   }
 
-  const onClickFilter = () => {
+  const onClearFilter = () => {
     setFilterTag('')
     setFilteredProjects(projects)
+    router.replace({
+      query: {},
+    })
   }
 
   return (
@@ -143,7 +164,7 @@ const Home: NextPage = () => {
               ))
             )}
           </Select>
-          <Button disabled={!filterTag} onClick={onClickFilter}>清空</Button>
+          <Button disabled={!filterTag} onClick={onClearFilter}>清空</Button>
         </div>
       </div>
       {/* 项目列表 */}
