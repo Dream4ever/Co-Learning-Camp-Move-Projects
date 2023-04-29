@@ -47,13 +47,13 @@ const Home: NextPage = () => {
     if (query.name) {
       setSearchName(query.name as string)
       filterByName(query.name as string)
-    } else if (query.chain) {
+    } else if (query.filter_by_chain) {
       setFilterTag('chain')
       filterByCatg('chain', query.chain as string)
       router.replace({
         query: { filter_by_chain: query.chain },
       })
-    } else if (query.status) {
+    } else if (query.filter_by_status) {
       setFilterTag('status')
       filterByCatg('status', query.status as string)
       router.replace({
