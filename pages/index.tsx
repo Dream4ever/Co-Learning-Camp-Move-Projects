@@ -17,6 +17,7 @@ const Home: NextPage = () => {
   const [projects, setProjects] = useState([])
   const [filteredProjects, setFilteredProjects] = useState([])
   const [searchName, setSearchName] = useState('')
+  const [aptosAddr, setAptosAddr] = useState('')
   const [chains, setChains] = useState([])
   const [status, setStatus] = useState([])
   const [filterTag, setFilterTag] = useState('')
@@ -25,10 +26,12 @@ const Home: NextPage = () => {
     if (router.isReady) {
       getAllProjects()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
 
   useEffect(() => {
     setFilterByQuery()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects])
 
   const filterTags = ['过滤方式', 'chain', 'status']
@@ -49,16 +52,13 @@ const Home: NextPage = () => {
       filterByName(query.name as string)
     } else if (query.filter_by_chain) {
       setFilterTag('chain')
-      filterByCatg('chain', query.chain as string)
-      router.replace({
-        query: { filter_by_chain: query.chain },
-      })
+      filterByCatg('chain', query.filter_by_chain as string)
     } else if (query.filter_by_status) {
       setFilterTag('status')
-      filterByCatg('status', query.status as string)
-      router.replace({
-        query: { filter_by_status: query.chain },
-      })
+      filterByCatg('status', query.filter_by_status as string)
+    } else if (query.hodler_aptos_addr) {
+      setAptosAddr(query.hodler_aptos_addr as string)
+      filterByAddr(query.hodler_aptos_addr as string)
     } else {
       setFilteredProjects(projects)
     }
@@ -89,10 +89,22 @@ const Home: NextPage = () => {
     setSearchName(text)
   }
 
+  const handleAddrInputChange = (e: any) => {
+    const text = e.target.value
+    setAptosAddr(text)
+  }
+
   const onClickSearch = () => {
     filterByName(searchName)
     router.replace({
       query: { name: searchName },
+    })
+  }
+
+  const handleAddrSearch = () => {
+    filterByAddr(aptosAddr)
+    router.replace({
+      query: { hodler_aptos_addr: aptosAddr },
     })
   }
 
@@ -103,14 +115,35 @@ const Home: NextPage = () => {
     setFilteredProjects(filtered)
   }
 
+  const filterByAddr = (addr: string) => {
+    const filtered = projects.filter((project: any) => {
+      return project.hodler_aptos_addr && (project.hodler_aptos_addr.toLowerCase().indexOf(addr.toLowerCase()) !== -1)
+    })
+    setFilteredProjects(filtered)
+  }
+
   const handleNameInputKeyDown = (e: any) => {
     if (e.key === 'Enter') {
       onClickSearch()
     }
   }
 
+  const handleAddrInputKeyDown = (e: any) => {
+    if (e.key === 'Enter') {
+      handleAddrSearch()
+    }
+  }
+
   const clearSearch = () => {
     setSearchName('')
+    router.replace({
+      query: {},
+    })
+    setFilteredProjects(projects)
+  }
+
+  const clearAddrSearch = () => {
+    setAptosAddr('')
     router.replace({
       query: {},
     })
@@ -182,6 +215,26 @@ const Home: NextPage = () => {
           </span>
           <Button disabled={!searchName.length} onClick={onClickSearch}>搜索</Button>
         </Label>
+        {/* 按 aptos addr 搜索 */}
+        <Label className='flex gap-x-4 items-center'>
+          <span className=''>按 APTOS ADDR 搜索：</span>
+          <span className='flex relative'>
+            <Input
+              className='w-40'
+              placeholder='请输入地址'
+              value={aptosAddr}
+              onChange={(e) => handleAddrInputChange(e)}
+              onKeyDown={handleAddrInputKeyDown}
+            />
+            {aptosAddr.length > 0 && (
+              <ClearIcon
+                onClick={clearAddrSearch}
+                className='absolute right-2 top-3 cursor-pointer fill-purple-600 w-4 h-4'
+              />
+            )}
+          </span>
+          <Button disabled={!aptosAddr.length} onClick={handleAddrSearch}>搜索</Button>
+        </Label>
         {/* 按链和状态过滤 */}
         <div className='flex gap-x-4 items-center'>
           <Select className="w-32" defaultValue={filterTags[0]} onChange={(e) => changeFilterTag(e)}>
@@ -242,6 +295,11 @@ const Home: NextPage = () => {
                   {project.chains.map((chain: any, i: number) => (
                     <Badge type='success' key={i}>{chain}</Badge>
                   ))}
+                </div>
+              )}
+              {project.hodler_aptos_addr && (
+                <div className='flex flex-wrap items-center gap-1'>
+                  <Badge type='success'>{project.hodler_aptos_addr}</Badge>
                 </div>
               )}
               {project.status && (
