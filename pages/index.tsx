@@ -115,7 +115,7 @@ const Home: NextPage = () => {
         <Label className='flex gap-x-4 items-center'>
           <span className=''>按项目名称搜索：</span>
           <span className='flex relative'>
-            <Input className='w-40' placeholder='请输入函数名' value={searchName} onChange={(e) => onSearchNameChange(e)} />
+            <Input className='w-40' placeholder='请输入项目名' value={searchName} onChange={(e) => onSearchNameChange(e)} />
             {searchName.length > 0 && (
               <ClearIcon onClick={clearSearch} className='absolute right-2 top-3 cursor-pointer fill-purple-600 w-4 h-4' />
             )}
