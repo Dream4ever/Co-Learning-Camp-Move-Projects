@@ -105,7 +105,7 @@ const Home: NextPage = () => {
       })
       setFilteredProjects(filtered)
       router.replace({
-        query: { chain: content },
+        query: { filter_by_chain: content },
       })
     } else if (catg === 'status') {
       const filtered = projects.filter((project: any) => {
@@ -113,7 +113,7 @@ const Home: NextPage = () => {
       })
       setFilteredProjects(filtered)
       router.replace({
-        query: { status: content },
+        query: { filter_by_status: content },
       })
     }
   }
