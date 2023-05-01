@@ -21,6 +21,7 @@ const Home: NextPage = () => {
   const [chains, setChains] = useState([])
   const [status, setStatus] = useState([])
   const [filterTag, setFilterTag] = useState('')
+  const [onlyOneProject, setOnlyOneProject] = useState(false)
 
   useEffect(() => {
     if (router.isReady) {
@@ -33,6 +34,14 @@ const Home: NextPage = () => {
     setFilterByQuery()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects])
+
+  useEffect(() => {
+    if (filteredProjects.length === 1) {
+      setOnlyOneProject(true)
+    } else {
+      setOnlyOneProject(false)
+    }
+  }, [filteredProjects])
 
   const filterTags = ['过滤方式', 'chain', 'status']
 
@@ -260,18 +269,21 @@ const Home: NextPage = () => {
         </div>
       </div>
       {/* 项目列表 */}
-      <div className="projects grid grid-cols-5 gap-4">
+      <div className={`projects grid gap-4 ${onlyOneProject ? 'grid-cols-1' : 'grid-cols-5'}`}>
         {filteredProjects.map((project: any, i) => (
-          <div className='card basis-1/5 border border-gray-300 rounded-lg' key={i}>
+          <div
+            className={`card border border-gray-300 rounded-lg ${onlyOneProject ? "basis-1" : "basis-1/5"}`}
+            key={i}
+          >
             {/* 项目卡片 */}
             {/* 项目 logo */}
-            <div className='logo h-40 border-b border-gray-200'>
+            <div className={`logo ${onlyOneProject ? 'h-72' : 'h-40'} border-b border-gray-200`}>
               {project.logo && (
                 <Image src={project.logo} alt='logo' />
               )}
             </div>
             {/* 项目介绍文字 */}
-            <div className='info p-4 flex flex-col gap-y-2'>
+            <div className={`info ${onlyOneProject ? 'h-96' : ''} p-4 flex flex-col justify-between gap-y-2`}>
               <div className='pb-1 text-lg font-bold'>{project.name}</div>
               {project.homepage && (
                 <Link href={project.homepage} passHref>
