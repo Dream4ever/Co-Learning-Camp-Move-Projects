@@ -283,7 +283,7 @@ const Home: NextPage = () => {
               )}
             </div>
             {/* 项目介绍文字 */}
-            <div className={`info ${onlyOneProject ? 'h-96' : ''} p-4 flex flex-col justify-between gap-y-2`}>
+            <div className={`info ${onlyOneProject ? 'h-96 items-center' : ''} p-4 flex flex-col justify-between gap-y-2`}>
               <div className='pb-1 text-lg font-bold'>{project.name}</div>
               {project.homepage && (
                 <Link href={project.homepage} passHref>
